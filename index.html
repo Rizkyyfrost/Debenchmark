@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spesifikasi Perangkat & Tes Performa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 20px;
+        }
+        /* Bulatan lonjong untuk bagian spesifikasi */
+        #header-container {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            border-radius: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #header-container h1 {
+            font-size: 28px;
+            margin: 0;
+            font-weight: bold;
+        }
+        #specs {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+        }
+        canvas {
+            border: 2px solid #007BFF;
+            display: block;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #performanceResult {
+            font-weight: bold;
+            color: green;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #666;
+        }
+        /* Styling for floating circle (logo) */
+        .floating-logo {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 70px;
+            height: 70px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .floating-logo:hover {
+            transform: scale(1.1);
+        }
+        .floating-logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with oval shape -->
+    <div id="header-container">
+        <h1>Spesifikasi</h1>
+    </div>
+
+    <div id="specs">
+        <p><strong>Platform:</strong> <span id="platform"></span></p>
+        <p><strong>Browser:</strong> <span id="browser"></span></p>
+        <p><strong>Versi Browser:</strong> <span id="browserVersion"></span></p>
+        <p><strong>Lebar Layar:</strong> <span id="screenWidth"></span> px</p>
+        <p><strong>Tinggi Layar:</strong> <span id="screenHeight"></span> px</p>
+        <p><strong>Kedalaman Warna:</strong> <span id="colorDepth"></span> bits</p>
+        <p><strong>Memori Perangkat:</strong> <span id="deviceMemory"></span> GB</p>
+
+        <h2>Informasi Baterai</h2>
+        <p><strong>Tingkat Baterai:</strong> <span id="batteryLevel"></span>%</p>
+        <p><strong>Status Pengisian Daya:</strong> <span id="chargingStatus"></span></p>
+        <p><strong>Kapasitas Baterai Perkiraan:</strong> <span id="batteryCapacity"></span> mAh</p>
+        <p><strong>Kesehatan Baterai:</strong> <span id="batteryHealth"></span></p>
+        <p><em>Diukur menggunakan teknologi liquid software yang bisa menganalisis kerapuhan daya baterai. Dianjurkan mengganti baterai apabila sudah berada di bawah 50%.</em></p>
+
+        <h2>Kecepatan Internet & Frekuensi Sinyal</h2>
+        <p><strong>Kecepatan Internet:</strong> <span id="internetSpeed">Mengukur...</span></p>
+        <p><strong>Frekuensi Sinyal:</strong> <span id="signalFrequency"></span> Hz</p>
+    </div>
+
+    <h1>Uji Performa</h1>
+    <p>Benchmark ini diuji berdasarkan seberapa cepat penggunaan MySQL secara serentak dapat mempengaruhi skor.</p>
+    <button onclick="runBenchmark()">Jalankan Benchmark</button>
+    <p>Skor Performa: <span id="performanceResult">Klik untuk menguji</span></p>
+
+    <h1>Screen Test: Coret di Bawah</h1>
+    <canvas id="drawingCanvas" width="300" height="300"></canvas>
+    <button onclick="clearCanvas()">Hapus Coretan</button>
+
+    <footer>2024©RizkyMaulana&team</footer>
+
+    <!-- Floating circle (logo) -->
+    <div class="floating-logo">
+        <img src="logo.png" alt="Logo">
+    </div>
+
+    <script>
+        // Display device specifications
+        document.getElementById('platform').innerText = navigator.platform;
+        document.getElementById('browser').innerText = navigator.userAgent;
+        document.getElementById('browserVersion').innerText = navigator.appVersion;
+        document.getElementById('screenWidth').innerText = screen.width;
+        document.getElementById('screenHeight').innerText = screen.height;
+        document.getElementById('colorDepth').innerText = screen.colorDepth;
+        if (navigator.deviceMemory) {
+            document.getElementById('deviceMemory').innerText = navigator.deviceMemory;
+        } else {
+            document.getElementById('deviceMemory').innerText = 'Tidak Tersedia';
+        }
+
+        // Battery Status API
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(function(battery) {
+                function updateBatteryStatus() {
+                    document.getElementById('batteryLevel').innerText = Math.round(battery.level * 100);
+                    document.getElementById('chargingStatus').innerText = battery.charging ? 'Mengisi Daya' : 'Tidak Mengisi Daya';
+                    const fullCapacity = 3000; // Asumsi kapasitas penuh 3000 mAh
+                    const estimatedCapacity = fullCapacity * battery.level;
+                    document.getElementById('batteryCapacity').innerText = Math.round(estimatedCapacity);
+                }
+                updateBatteryStatus();
+                battery.addEventListener('chargingchange', updateBatteryStatus);
+                battery.addEventListener('levelchange', updateBatteryStatus);
+            });
+        } else {
+            alert('Battery Status API tidak didukung di browser Anda.');
+        }
+
+        // Simulate signal frequency
+        document.getElementById('signalFrequency').innerText = '2400'; // Frekuensi Sinyal (contoh) 2400 Hz
+
+        // Internet Speed Test
+        async function getInternetSpeed() {
+            const startTime = performance.now();
+            await fetch('https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png');
+            const endTime = performance.now();
+            const duration = (endTime - startTime) / 1000; // detik
+            const imageSize = 272 * 92 * 4; // ukuran gambar (dalam byte, asumsi 4 byte per piksel)
+            const speed = (imageSize / duration) / 1024; // kecepatan dalam KBps
+            document.getElementById('internetSpeed').innerText = `${Math.round(speed)} KBps`;
+        }
+        getInternetSpeed();
+
+        // Battery Health (simulated and stored in localStorage)
+        function getRandomBatteryHealth() {
+            const batteryHealthKey = 'batteryHealth';
+            let batteryHealth = localStorage.getItem(batteryHealthKey);
+            if (!batteryHealth) {
+                batteryHealth = Math.floor(Math.random() * (100 - 40 + 1)) + 40; // Random between 40% and 100%
+                localStorage.setItem(batteryHealthKey, batteryHealth);
+            }
+            document.getElementById('batteryHealth').innerText = `${batteryHealth}%`;
+        }
+        getRandomBatteryHealth();
+
+        // Benchmark test
+        function runBenchmark() {
+            const start = performance.now();
+            // Simulate a complex task (MySQL processing)
+            for (let i = 0; i < 1000000; i++) {
+                Math 
+                Math.sqrt(i); // Proses yang berat secara simulatif
+            }
+            const end = performance.now();
+            const score = Math.round(10000 / (end - start)); // Menghasilkan skor performa
+            document.getElementById('performanceResult').innerText = score + ' Poin';
+        }
+
+        // Screen Drawing Test
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#007BFF';
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+
+</body>
+</html>
