@@ -12,13 +12,12 @@
             padding: 0;
         }
 
-        /* Header */
         #header-container {
-            background-color: #FF5733; /* Warna merah */
+            background-color: #FF5733;
             color: white;
             text-align: center;
             padding: 20px;
-            border-bottom: 4px solid #C70039; /* Warna lebih gelap untuk border */
+            border-bottom: 4px solid #C70039;
         }
 
         .specs-container {
@@ -42,15 +41,8 @@
             transform: scale(1.05);
         }
 
-        .spec-title {
-            font-size: 14px;
-            margin: 5px 0;
-        }
-
-        .spec-score {
-            font-size: 20px;
-            font-weight: bold;
-            color: #FF5733; /* Warna merah */
+        .spec-box p {
+            color: #FF5733;
         }
 
         footer {
@@ -60,7 +52,17 @@
             background-color: #f1f1f1;
         }
 
-        /* Popup Style */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }
+
         .popup {
             display: none;
             position: fixed;
@@ -68,40 +70,17 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: white;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            padding: 20px;
             z-index: 10;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
         }
 
         .popup p {
-            margin: 10px 0;
-        }
-
-        .popup button {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background-color: #FF5733; /* Warna merah */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .popup button:hover {
-            background-color: #C70039; /* Warna lebih gelap untuk hover */
-        }
-
-        /* Overlay */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 9;
+            color: #FF5733;
         }
 
         @media (max-width: 480px) {
@@ -115,44 +94,45 @@
 
     <div id="header-container">
         <h1 id="random-score">77096</h1>
-        <p class="score" id="defeated-users">Defeated 17% of users</p>
+        <p id="defeated-users">Defeated 1% of users</p>
     </div>
 
     <div class="specs-container">
         <div class="spec-box" onclick="showPopup('Baterai', 'Kesehatan baterai: 80%')">
             <p class="spec-title">Baterai</p>
             <p class="spec-score" id="battery-level">94%</p>
+        </div>            
+        <div class="spec-box" onclick="showPopup('RAM', 'RAM terpakai: 8 GB')">
+            <p>RAM</p>
+            <p id="ram-amount">8 GB</p>
         </div>
-
-        <div class="spec-box" onclick="showPopup('RAM', 'RAM terpakai: 3.2 GB')">
-            <p class="spec-title">RAM</p>
-            <p class="spec-score" id="ram-amount">4 GB</p>
-        </div>
-
         <div class="spec-box" onclick="showPopup('CPU', 'Kecepatan CPU: 2.18 GHz')">
-            <p class="spec-title">CPU</p>
-            <p class="spec-score">2.18 GHz</p>
+            <p>CPU</p>
+            <p id="cpu-speed">2.18 GHz</p>
         </div>
-
-        <div class="spec-box" onclick="showPopup('Signal test', 'Kecepatan Internet: 44 Mbps')">
-            <p class="spec-title">Signal Test</p>
-            <p class="spec-score" id="signal-score">44 Mbps</p>
+        <div class="spec-box" onclick="showPopup('Signal Test', 'Kecepatan Internet: 44 Mbps')">
+            <p>Signal Test</p>
+            <p>44 Mbps</p>
         </div>
-
-        <!-- Display Box -->
         <div class="spec-box" onclick="showPopup('Display', 'Resolusi: 1080 x 2400')">
-            <p class="spec-title">Display</p>
-            <p class="spec-score">1080 x 2400</p>
+            <p>Display</p>
+            <p>1080 x 2400</p>
         </div>
-
-        <!-- Suggestions Box -->
-        <div class="spec-box" onclick="showPopup('Saran', 'Pastikan untuk mengupdate aplikasi secara berkala.')">
-            <p class="spec-title">Saran</p>
-            <p class="spec-score">dukung pengembang</p>
+        <div class="spec-box" onclick="showPopup('Saran', 'Dukung pengembang!')">
+            <p>Saran</p>
+            <p>Beri rating bagus</p>
+        </div>
+        <div class="spec-box" onclick="showPopup('Kamera', 'Binner kamera mendeteksi pixel binning')">
+            <p>Kamera</p>
+            <p>12Mpx</p>
+        </div>
+        <div class="spec-box" onclick="showPopup('Suhu', 'Suhu perangkat: 36°C')">
+            <p>Suhu</p>
+            <p id="temperature">36°C</p>
         </div>
     </div>
 
-    <div class="overlay" id="overlay"></div>
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
 
     <div class="popup" id="popup">
         <p id="popup-title" style="font-weight: bold;"></p>
@@ -160,43 +140,37 @@
         <button onclick="closePopup()">Tutup</button>
     </div>
 
-    <footer>
-        2024©RizkyMaulana&team
-    </footer>
+    <footer>2024©RizkyMaulana&team</footer>
 
     <script>
-        // Cek jika skor sudah ada di localStorage, jika belum buat baru
-        let constantScore;
-
-        if (localStorage.getItem('score') === null) {
-            // Menghasilkan skor acak antara 50000 dan 1230000
-            constantScore = Math.floor(Math.random() * (1230000 - 50000 + 1)) + 50000;
-            localStorage.setItem('score', constantScore);
-        } else {
-            constantScore = localStorage.getItem('score');
-        }
-
-        const defeatedPercentage = 17;
-
-        // Update skor dan defeated users di header
-        function updateHeader() {
-            document.getElementById('random-score').textContent = constantScore;
-            document.getElementById('defeated-users').textContent = `Defeated ${defeatedPercentage}% of users`;
-        }
-
-        updateHeader();
-
-        // Popup handling
         function showPopup(title, content) {
             document.getElementById('popup-title').innerText = title;
             document.getElementById('popup-content').innerText = content;
-            document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
 
         function closePopup() {
-            document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function generateScore() {
+            let score = localStorage.getItem('deviceScore');
+            if (!score) {
+                const minScore = 50000;
+                const maxScore = 100000;
+                score = Math.floor(Math.random() * (maxScore - minScore + 1)) + minScore;
+                localStorage.setItem('deviceScore', score);
+            }
+            return score; // Return the score instead of displaying it here
+        }
+
+        function updateDefeatedUsers(score) {
+            const defeatedUsers = Math.floor(((score - 50000) / 50000) * 99) + 1;
+            document.getElementById('defeated-users').textContent = `Defeated ${defeatedUsers}% of users`;
         }
 
         // Mendapatkan level baterai
@@ -216,16 +190,10 @@
             document.getElementById('battery-level').innerText = `${percentage}%`;
         }
 
-        // Mendapatkan RAM
-        const ram = navigator.deviceMemory || 'Tidak Didukung';
-        document.getElementById('ram-amount').innerText = `${ram} GB`;
-
-        // Street Test (nilai random)
-        function updateStreetTest() {
-            const street = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
-            document.getElementById('signal-score').innerText = `${street} Mbps`;
-        }
-        updateStreetTest();
+        // Generate score and update display
+        const score = generateScore();
+        document.getElementById('random-score').textContent = score;
+        updateDefeatedUsers(score);
     </script>
 
 </body>
