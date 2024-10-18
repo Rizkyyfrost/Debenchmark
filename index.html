@@ -3,243 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spesifikasi Perangkat & Tes Performa</title>
+    <title>Spesifikasi & Tes Performa</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            color: #333;
-            margin: 20px;
-        }
-        /* Bulatan lonjong untuk bagian spesifikasi */
-        #header-container {
-            background-color: #007BFF;
-            color: white;
-            padding: 15px;
-            border-radius: 50px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        #header-container h1 {
-            font-size: 28px;
             margin: 0;
-            font-weight: bold;
+            padding: 0;
         }
-        #specs {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 18px;
-        }
-        canvas {
-            border: 2px solid #007BFF;
-            display: block;
-            margin-top: 20px;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #007BFF;
+
+        /* Header */
+        #header-container {
+            background-color: #FF5733; /* Warna merah */
             color: white;
-            border: none;
-            border-radius: 5px;
+            text-align: center;
+            padding: 20px;
+            border-bottom: 4px solid #C70039; /* Warna lebih gelap untuk border */
+        }
+
+        .specs-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .spec-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: transform 0.2s;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .spec-box:hover {
+            transform: scale(1.05);
         }
-        #performanceResult {
+
+        .spec-title {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .spec-score {
+            font-size: 20px;
             font-weight: bold;
-            color: green;
+            color: #FF5733; /* Warna merah */
         }
+
         footer {
             text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-            color: #666;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
         }
-        /* Styling for floating circle (logo) */
-        .floating-logo {
+
+        /* Popup Style */
+        .popup {
+            display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 70px;
-            height: 70px;
-            background-color: #007BFF;
-            border-radius: 50%;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .popup p {
+            margin: 10px 0;
+        }
+
+        .popup button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #FF5733; /* Warna merah */
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: transform 0.3s ease;
         }
-        .floating-logo:hover {
-            transform: scale(1.1);
+
+        .popup button:hover {
+            background-color: #C70039; /* Warna lebih gelap untuk hover */
         }
-        .floating-logo img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }
+
+        @media (max-width: 480px) {
+            .specs-container {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header with oval shape -->
     <div id="header-container">
-        <h1>Spesifikasi</h1>
+        <h1 id="random-score">77096</h1>
+        <p class="score" id="defeated-users">Defeated 17% of users</p>
     </div>
 
-    <div id="specs">
-        <p><strong>Platform:</strong> <span id="platform"></span></p>
-        <p><strong>Browser:</strong> <span id="browser"></span></p>
-        <p><strong>Versi Browser:</strong> <span id="browserVersion"></span></p>
-        <p><strong>Lebar Layar:</strong> <span id="screenWidth"></span> px</p>
-        <p><strong>Tinggi Layar:</strong> <span id="screenHeight"></span> px</p>
-        <p><strong>Kedalaman Warna:</strong> <span id="colorDepth"></span> bits</p>
-        <p><strong>Memori Perangkat:</strong> <span id="deviceMemory"></span> GB</p>
+    <div class="specs-container">
+        <div class="spec-box" onclick="showPopup('Baterai', 'Kesehatan baterai: 80%')">
+            <p class="spec-title">Baterai</p>
+            <p class="spec-score" id="battery-level">94%</p>
+        </div>
 
-        <h2>Informasi Baterai</h2>
-        <p><strong>Tingkat Baterai:</strong> <span id="batteryLevel"></span>%</p>
-        <p><strong>Status Pengisian Daya:</strong> <span id="chargingStatus"></span></p>
-        <p><strong>Kapasitas Baterai Perkiraan:</strong> <span id="batteryCapacity"></span> mAh</p>
-        <p><strong>Kesehatan Baterai:</strong> <span id="batteryHealth"></span></p>
-        <p><em>Diukur menggunakan teknologi liquid software yang bisa menganalisis kerapuhan daya baterai. Dianjurkan mengganti baterai apabila sudah berada di bawah 50%.</em></p>
+        <div class="spec-box" onclick="showPopup('RAM', 'RAM terpakai: 3.2 GB')">
+            <p class="spec-title">RAM</p>
+            <p class="spec-score" id="ram-amount">4 GB</p>
+        </div>
 
-        <h2>Kecepatan Internet & Frekuensi Sinyal</h2>
-        <p><strong>Kecepatan Internet:</strong> <span id="internetSpeed">Mengukur...</span></p>
-        <p><strong>Frekuensi Sinyal:</strong> <span id="signalFrequency"></span> Hz</p>
+        <div class="spec-box" onclick="showPopup('CPU', 'Kecepatan CPU: 2.18 GHz')">
+            <p class="spec-title">CPU</p>
+            <p class="spec-score">2.18 GHz</p>
+        </div>
+
+        <div class="spec-box" onclick="showPopup('Signal test', 'Kecepatan Internet: 44 Mbps')">
+            <p class="spec-title">Signal Test</p>
+            <p class="spec-score" id="signal-score">44 Mbps</p>
+        </div>
+
+        <!-- Display Box -->
+        <div class="spec-box" onclick="showPopup('Display', 'Resolusi: 1080 x 2400')">
+            <p class="spec-title">Display</p>
+            <p class="spec-score">1080 x 2400</p>
+        </div>
+
+        <!-- Suggestions Box -->
+        <div class="spec-box" onclick="showPopup('Saran', 'Pastikan untuk mengupdate aplikasi secara berkala.')">
+            <p class="spec-title">Saran</p>
+            <p class="spec-score">dukung pengembang</p>
+        </div>
     </div>
 
-    <h1>Uji Performa</h1>
-    <p>Benchmark ini diuji berdasarkan seberapa cepat penggunaan MySQL secara serentak dapat mempengaruhi skor.</p>
-    <button onclick="runBenchmark()">Jalankan Benchmark</button>
-    <p>Skor Performa: <span id="performanceResult">Klik untuk menguji</span></p>
+    <div class="overlay" id="overlay"></div>
 
-    <h1>Screen Test: Coret di Bawah</h1>
-    <canvas id="drawingCanvas" width="300" height="300"></canvas>
-    <button onclick="clearCanvas()">Hapus Coretan</button>
-
-    <footer>2024©RizkyMaulana&team</footer>
-
-    <!-- Floating circle (logo) -->
-    <div class="floating-logo">
-        <img src="logo.png" alt="Logo">
+    <div class="popup" id="popup">
+        <p id="popup-title" style="font-weight: bold;"></p>
+        <p id="popup-content"></p>
+        <button onclick="closePopup()">Tutup</button>
     </div>
+
+    <footer>
+        2024©RizkyMaulana&team
+    </footer>
 
     <script>
-        // Display device specifications
-        document.getElementById('platform').innerText = navigator.platform;
-        document.getElementById('browser').innerText = navigator.userAgent;
-        document.getElementById('browserVersion').innerText = navigator.appVersion;
-        document.getElementById('screenWidth').innerText = screen.width;
-        document.getElementById('screenHeight').innerText = screen.height;
-        document.getElementById('colorDepth').innerText = screen.colorDepth;
-        if (navigator.deviceMemory) {
-            document.getElementById('deviceMemory').innerText = navigator.deviceMemory;
+        // Cek jika skor sudah ada di localStorage, jika belum buat baru
+        let constantScore;
+
+        if (localStorage.getItem('score') === null) {
+            // Menghasilkan skor acak antara 50000 dan 1230000
+            constantScore = Math.floor(Math.random() * (1230000 - 50000 + 1)) + 50000;
+            localStorage.setItem('score', constantScore);
         } else {
-            document.getElementById('deviceMemory').innerText = 'Tidak Tersedia';
+            constantScore = localStorage.getItem('score');
         }
 
-        // Battery Status API
-        if ('getBattery' in navigator) {
+        const defeatedPercentage = 17;
+
+        // Update skor dan defeated users di header
+        function updateHeader() {
+            document.getElementById('random-score').textContent = constantScore;
+            document.getElementById('defeated-users').textContent = `Defeated ${defeatedPercentage}% of users`;
+        }
+
+        updateHeader();
+
+        // Popup handling
+        function showPopup(title, content) {
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-content').innerText = content;
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Mendapatkan level baterai
+        if (navigator.getBattery) {
             navigator.getBattery().then(function(battery) {
-                function updateBatteryStatus() {
-                    document.getElementById('batteryLevel').innerText = Math.round(battery.level * 100);
-                    document.getElementById('chargingStatus').innerText = battery.charging ? 'Mengisi Daya' : 'Tidak Mengisi Daya';
-                    const fullCapacity = 3000; // Asumsi kapasitas penuh 3000 mAh
-                    const estimatedCapacity = fullCapacity * battery.level;
-                    document.getElementById('batteryCapacity').innerText = Math.round(estimatedCapacity);
-                }
-                updateBatteryStatus();
-                battery.addEventListener('chargingchange', updateBatteryStatus);
-                battery.addEventListener('levelchange', updateBatteryStatus);
+                updateBatteryLevel(battery.level);
+                battery.onlevelchange = function() {
+                    updateBatteryLevel(battery.level);
+                };
             });
         } else {
-            alert('Battery Status API tidak didukung di browser Anda.');
+            document.getElementById('battery-level').innerText = 'Tidak Didukung';
         }
 
-        // Simulate signal frequency
-        document.getElementById('signalFrequency').innerText = '2400'; // Frekuensi Sinyal (contoh) 2400 Hz
-
-        // Internet Speed Test
-        async function getInternetSpeed() {
-            const startTime = performance.now();
-            await fetch('https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png');
-            const endTime = performance.now();
-            const duration = (endTime - startTime) / 1000; // detik
-            const imageSize = 272 * 92 * 4; // ukuran gambar (dalam byte, asumsi 4 byte per piksel)
-            const speed = (imageSize / duration) / 1024; // kecepatan dalam KBps
-            document.getElementById('internetSpeed').innerText = `${Math.round(speed)} KBps`;
-        }
-        getInternetSpeed();
-
-        // Battery Health (simulated and stored in localStorage)
-        function getRandomBatteryHealth() {
-            const batteryHealthKey = 'batteryHealth';
-            let batteryHealth = localStorage.getItem(batteryHealthKey);
-            if (!batteryHealth) {
-                batteryHealth = Math.floor(Math.random() * (100 - 40 + 1)) + 40; // Random between 40% and 100%
-                localStorage.setItem(batteryHealthKey, batteryHealth);
-            }
-            document.getElementById('batteryHealth').innerText = `${batteryHealth}%`;
-        }
-        getRandomBatteryHealth();
-
-        // Benchmark test
-        function runBenchmark() {
-            const start = performance.now();
-            // Simulate a complex task (MySQL processing)
-            for (let i = 0; i < 1000000; i++) {
-                Math 
-                Math.sqrt(i); // Proses yang berat secara simulatif
-            }
-            const end = performance.now();
-            const score = Math.round(10000 / (end - start)); // Menghasilkan skor performa
-            document.getElementById('performanceResult').innerText = score + ' Poin';
+        function updateBatteryLevel(level) {
+            const percentage = Math.floor(level * 100);
+            document.getElementById('battery-level').innerText = `${percentage}%`;
         }
 
-        // Screen Drawing Test
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
+        // Mendapatkan RAM
+        const ram = navigator.deviceMemory || 'Tidak Didukung';
+        document.getElementById('ram-amount').innerText = `${ram} GB`;
 
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
-
-        function startDrawing(e) {
-            isDrawing = true;
-            draw(e);
+        // Street Test (nilai random)
+        function updateStreetTest() {
+            const street = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
+            document.getElementById('signal-score').innerText = `${street} Mbps`;
         }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#007BFF';
-            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
-            ctx.beginPath();
-        }
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        updateStreetTest();
     </script>
 
 </body>
